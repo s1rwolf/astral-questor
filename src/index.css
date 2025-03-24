@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -123,6 +122,24 @@
   }
 }
 
+@keyframes zodiacRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes constellationGlow {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
 .orbiting-star {
   --orbit-radius: 30px;
   position: absolute;
@@ -147,6 +164,19 @@
   transform-origin: left center;
 }
 
+.zodiac-wheel {
+  animation: zodiacRotate 180s linear infinite;
+}
+
+.zodiac-sign {
+  transition: all 0.3s ease;
+}
+
+.zodiac-sign:hover {
+  filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.8));
+  transform: scale(1.1);
+}
+
 .parallax-bg {
   transform: translateZ(-10px) scale(2);
 }
@@ -157,4 +187,8 @@
 
 .parallax-content {
   transform: translateZ(0);
+}
+
+.constellation-star {
+  animation: constellationGlow 4s ease-in-out infinite;
 }

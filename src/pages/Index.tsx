@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import ZodiacBackground from '../components/ZodiacBackground';
 
 const Index = () => {
   const [isVisible, setIsVisible] = useState<Record<string, boolean>>({
@@ -168,6 +169,7 @@ const Index = () => {
   return (
     <>
       <div className="stars-container"></div>
+      <ZodiacBackground />
       <Navbar />
       
       {/* Hero Section */}

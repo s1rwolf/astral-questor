@@ -28,33 +28,35 @@ const Index = () => {
   const isCtaVisible = useIntersectionObserver({ ref: ctaRef });
   
   return (
-    <>
+    <div className="relative min-h-screen">
       <StarBackground />
       <ZodiacBackground />
       <Navbar />
       
-      <div ref={heroRef}>
-        <HeroSection isVisible={isHeroVisible} />
-      </div>
-      
-      <div ref={featuresRef}>
-        <FeaturesSection features={features} isVisible={isFeaturesVisible} />
-      </div>
-      
-      <div ref={processRef}>
-        <ProcessSection process={process} isVisible={isProcessVisible} />
-      </div>
-      
-      <div ref={testimonialsRef}>
-        <TestimonialsSection testimonials={testimonials} isVisible={isTestimonialsVisible} />
-      </div>
-      
-      <div ref={ctaRef}>
-        <CTASection isVisible={isCtaVisible} />
-      </div>
+      <main>
+        <div ref={heroRef}>
+          <HeroSection isVisible={isHeroVisible} />
+        </div>
+        
+        <div ref={featuresRef}>
+          <FeaturesSection features={features} isVisible={isFeaturesVisible} />
+        </div>
+        
+        <div ref={processRef}>
+          <ProcessSection process={process} isVisible={isProcessVisible} />
+        </div>
+        
+        <div ref={testimonialsRef}>
+          <TestimonialsSection testimonials={testimonials} isVisible={isTestimonialsVisible} />
+        </div>
+        
+        <div ref={ctaRef}>
+          <CTASection isVisible={isCtaVisible} />
+        </div>
+      </main>
       
       <Footer />
-    </>
+    </div>
   );
 };
 

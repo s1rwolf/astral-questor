@@ -146,7 +146,7 @@ export const generateQuizResult = (answers: QuizAnswers, birthData: BirthData): 
   return {
     summary: `Como ${zodiacSign}, você possui uma personalidade ${personalityTraits.join(", ")}. Seu mapa astral revela uma jornada única, onde suas características naturais se alinham com os corpos celestes no momento do seu nascimento. Este relatório oferece uma visão inicial sobre sua energia cósmica e como ela pode influenciar diversos aspectos da sua vida.`,
     details: {
-      "Sol em " + zodiacSign: getZodiacDescription(zodiacSign),
+      [`Sol em ${zodiacSign}`]: getZodiacDescription(zodiacSign),
       "Ascendente": "Seu ascendente representa como você se projeta para o mundo. Uma análise completa requer cálculos precisos baseados no horário e local de nascimento.",
       "Lua": "A posição da lua no seu mapa representa suas emoções e instintos. Para uma análise completa, acesse a versão premium.",
       "Vênus": "Vênus representa como você expressa e recebe amor. Para uma análise completa, acesse a versão premium.",

@@ -192,3 +192,50 @@
 .constellation-star {
   animation: constellationGlow 4s ease-in-out infinite;
 }
+
+// Adicionar animações novas para a roda do zodíaco
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px 2px rgba(124, 58, 237, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px 5px rgba(124, 58, 237, 0.5);
+  }
+}
+
+@keyframes star-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes zodiac-pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-star-float {
+  animation: star-float 3s ease-in-out infinite;
+}
+
+.animate-zodiac-pulse {
+  animation: zodiac-pulse 4s ease-in-out infinite;
+}
+
+.zodiac-symbol {
+  @apply transition-all duration-300;
+}
+
+.zodiac-symbol:hover {
+  filter: drop-shadow(0 0 5px rgba(124, 58, 237, 0.8));
+  transform: scale(1.2);
+}

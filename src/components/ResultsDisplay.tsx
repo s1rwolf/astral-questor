@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import QRCodeGenerator from './QRCodeGenerator';
 import { QuizResult } from '../utils/quizUtils';
 
@@ -15,6 +15,7 @@ interface ResultsDisplayProps {
 
 const ResultsDisplay = ({ result, shareUrl, onPremiumClick }: ResultsDisplayProps) => {
   const [activeTab, setActiveTab] = useState('summary');
+  const navigate = useNavigate();
   
   const handleShare = () => {
     if (navigator.share) {
@@ -29,6 +30,14 @@ const ResultsDisplay = ({ result, shareUrl, onPremiumClick }: ResultsDisplayProp
       navigator.clipboard.writeText(shareUrl)
         .then(() => alert('Link copiado para a área de transferência!'))
         .catch((err) => console.error('Erro ao copiar link:', err));
+    }
+  };
+  
+  const handleViewPremium = () => {
+    if (result.isPremium) {
+      navigate('/premium');
+    } else {
+      onPremiumClick?.();
     }
   };
   
@@ -198,6 +207,15 @@ const ResultsDisplay = ({ result, shareUrl, onPremiumClick }: ResultsDisplayProp
                         </li>
                       </ul>
                     </div>
+                    
+                    <div className="mt-6 text-center">
+                      <button 
+                        className="cosmic-button"
+                        onClick={handleViewPremium}
+                      >
+                        Ver Análise Premium Completa
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -222,13 +240,20 @@ const ResultsDisplay = ({ result, shareUrl, onPremiumClick }: ResultsDisplayProp
             
             <button
               onClick={() => window.print()}
-              className="w-full px-6 py-3 bg-space-800 hover:bg-space-700 text-white rounded-full transition-all duration-300"
+              className="w-full px-6 py-3 bg-space-800 hover:bg-space-700 text-white rounded-full transition-all duration-300 mb-4"
             >
               Salvar PDF
             </button>
             
-            {!result.isPremium && (
-              <div className="mt-8 p-4 bg-cosmic-700/10 rounded-lg">
+            {result.isPremium ? (
+              <button
+                onClick={handleViewPremium}
+                className="w-full px-6 py-3 bg-gradient-to-r from-cosmic-600 to-cosmic-500 text-white rounded-full text-sm transition-all duration-300 hover:opacity-90"
+              >
+                Acessar Área Premium
+              </button>
+            ) : (
+              <div className="mt-4 p-4 bg-cosmic-700/10 rounded-lg">
                 <h4 className="text-sm font-medium text-cosmic-300 mb-2">Versão Premium</h4>
                 <p className="text-space-400 text-sm mb-4">
                   Desbloqueie uma análise completa do seu mapa astral com interpretações detalhadas.

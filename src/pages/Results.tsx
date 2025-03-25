@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ResultsDisplay from '../components/ResultsDisplay';
-import { QuizResult } from '../utils/quizUtils';
+import { QuizResult, generatePremiumContent } from '../utils/quizUtils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
@@ -78,11 +77,22 @@ const Results = () => {
     setTimeout(() => {
       // In a real app, you'd update the user's account and result data
       if (result) {
+        // Usar a função de geração de conteúdo premium
+        const photoUrl = selectedPhoto ? URL.createObjectURL(selectedPhoto) : null;
+        const birthData = {
+          day: 1, // Valores padrão, em uma aplicação real seriam os dados do usuário
+          month: 1,
+          year: 2000,
+          hour: 12,
+          minute: 0,
+          city: "São Paulo",
+          zodiacSign: "Áries" // Para demonstração
+        };
+        
+        const premiumContent = generatePremiumContent(birthData, photoUrl);
         const enhancedResult = {
           ...result,
-          isPremium: true,
-          futureAnalysis: "Nos próximos meses, você passará por uma transformação significativa em sua carreira. Novas oportunidades surgirão inesperadamente, trazendo crescimento financeiro e realização pessoal. Seus relacionamentos florescerão com uma comunicação mais aberta e sincera.",
-          clientPhoto: selectedPhoto ? URL.createObjectURL(selectedPhoto) : null
+          ...premiumContent
         };
         
         setResult(enhancedResult);
@@ -153,17 +163,19 @@ const Results = () => {
                   onPremiumClick={handlePremiumModalOpen}
                 />
                 
-                <div className="mt-16 text-center">
-                  <h3 className="text-2xl font-semibold text-white mb-4">Quer uma Análise Mais Profunda?</h3>
-                  <p className="text-space-300 max-w-2xl mx-auto mb-8">
-                    Desbloqueie a versão premium do seu mapa astral para acessar previsões detalhadas, 
-                    análises de compatibilidade avançadas e orientações personalizadas para diferentes 
-                    áreas da sua vida.
-                  </p>
-                  <button className="cosmic-button text-lg" onClick={handlePremiumModalOpen}>
-                    Acessar Versão Premium
-                  </button>
-                </div>
+                {!result.isPremium && (
+                  <div className="mt-16 text-center">
+                    <h3 className="text-2xl font-semibold text-white mb-4">Quer uma Análise Mais Profunda?</h3>
+                    <p className="text-space-300 max-w-2xl mx-auto mb-8">
+                      Desbloqueie a versão premium do seu mapa astral para acessar previsões detalhadas, 
+                      análises de compatibilidade avançadas e orientações personalizadas para diferentes 
+                      áreas da sua vida.
+                    </p>
+                    <button className="cosmic-button text-lg" onClick={handlePremiumModalOpen}>
+                      Acessar Versão Premium
+                    </button>
+                  </div>
+                )}
               </div>
             )
           )}

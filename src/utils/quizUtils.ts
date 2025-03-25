@@ -1,4 +1,3 @@
-
 export interface QuizResult {
   summary: string;
   details: {
@@ -11,6 +10,23 @@ export interface QuizResult {
   isPremium?: boolean;
   futureAnalysis?: string;
   clientPhoto?: string | null;
+  personalNumerology?: string;
+  influenceCycles?: {
+    cycle: string;
+    description: string;
+    duration: string;
+  }[];
+  karmaticLessons?: string[];
+  soulPurpose?: string;
+  relationshipPredictions?: {
+    area: string;
+    prediction: string;
+  }[];
+  careerGuidance?: string;
+  monthlyForecast?: {
+    month: string;
+    forecast: string;
+  }[];
 }
 
 export interface BirthData {
@@ -177,4 +193,69 @@ const getZodiacSignFromBirthDate = (day: number, month: number): string => {
   if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return "Capricórnio";
   if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return "Aquário";
   return "Peixes"; // (month === 2 && day >= 19) || (month === 3 && day <= 20)
+};
+
+// Função para gerar resultados premium
+export const generatePremiumContent = (birthData: BirthData, photo?: string | null): Partial<QuizResult> => {
+  // Em um app real, isso usaria IA para analisar os dados e a foto
+  const zodiacSign = birthData.zodiacSign || getZodiacSignFromBirthDate(birthData.day, birthData.month);
+  
+  return {
+    isPremium: true,
+    clientPhoto: photo,
+    futureAnalysis: `Com base em seu mapa astral detalhado, os próximos 12 meses trarão um período de transformação significativa em sua vida. ${zodiacSign === "Áries" ? "Como ariano(a), sua energia natural será amplificada" : "Seu signo solar indica uma fase de autodescoberta"}, permitindo que você explore novos caminhos e oportunidades. Cuide especialmente da sua saúde emocional durante o próximo trimestre.`,
+    personalNumerology: `Seu número de expressão é ${(birthData.day + birthData.month + birthData.year) % 9 || 9}, indicando uma personalidade ${['compassiva e idealista', 'líder e independente', 'criativa e expressiva', 'prática e confiável', 'aventureira e adaptável', 'responsável e harmoniosa', 'analítica e introspectiva', 'ambiciosa e resiliente', 'humanitária e sábia'][(birthData.day + birthData.month + birthData.year) % 9 || 9 - 1]}.`,
+    influenceCycles: [
+      {
+        cycle: "Ciclo de Crescimento",
+        description: "Um período de expansão espiritual e conhecimento interior",
+        duration: "6 meses"
+      },
+      {
+        cycle: "Ciclo de Consolidação",
+        description: "Momento de estabilizar conquistas e colher resultados",
+        duration: "3 meses"
+      },
+      {
+        cycle: "Ciclo de Renovação",
+        description: "Fase para soltar padrões antigos e abraçar o novo",
+        duration: "3 meses"
+      }
+    ],
+    karmaticLessons: [
+      "Aprender a equilibrar responsabilidades pessoais e profissionais",
+      "Desenvolver paciência e aceitação com situações fora do seu controle",
+      "Cultivar relacionamentos baseados em confiança mútua e honestidade"
+    ],
+    soulPurpose: "Sua missão de vida está relacionada à criação de harmonia e beleza em seus ambientes, inspirando outros através da expressão autêntica e criativa.",
+    relationshipPredictions: [
+      {
+        area: "Relacionamentos Amorosos",
+        prediction: "Você encontrará maior profundidade nos vínculos emocionais este ano, especialmente se estiver aberto à vulnerabilidade."
+      },
+      {
+        area: "Família",
+        prediction: "Resolução de conflitos antigos trará uma nova dinâmica de apoio e compreensão no círculo familiar."
+      },
+      {
+        area: "Amizades",
+        prediction: "Novas conexões significativas surgirão através de interesses compartilhados e valores alinhados."
+      }
+    ],
+    careerGuidance: "Seu mapa indica forte potencial para liderança e inovação. Os próximos meses favorecem novos projetos que envolvam criatividade e colaboração. Considere aprimorar habilidades de comunicação digital.",
+    monthlyForecast: [
+      {
+        month: "Junho",
+        forecast: "Excelente período para iniciar novos projetos e expandir sua rede de contatos profissionais."
+      },
+      {
+        month: "Julho",
+        forecast: "Foco na saúde e bem-estar. Práticas de autocuidado trarão benefícios significativos."
+      },
+      {
+        month: "Agosto",
+        forecast: "Oportunidades financeiras surgirão. Momento favorável para investimentos cuidadosamente planejados."
+      }
+    ]
+  };
 };

@@ -1,21 +1,19 @@
 
 import { useState } from 'react';
 import QRCodeGenerator from './QRCodeGenerator';
+import { QuizResult } from '../utils/quizUtils';
 
 interface ResultsDisplayProps {
-  result: {
-    summary: string;
-    details: {
-      [key: string]: string;
-    };
-    compatibility: string[];
-    strengths: string[];
-    challenges: string[];
+  result: QuizResult & {
+    isPremium?: boolean;
+    futureAnalysis?: string;
+    clientPhoto?: string | null;
   };
   shareUrl: string;
+  onPremiumClick?: () => void;
 }
 
-const ResultsDisplay = ({ result, shareUrl }: ResultsDisplayProps) => {
+const ResultsDisplay = ({ result, shareUrl, onPremiumClick }: ResultsDisplayProps) => {
   const [activeTab, setActiveTab] = useState('summary');
   
   const handleShare = () => {
@@ -37,9 +35,31 @@ const ResultsDisplay = ({ result, shareUrl }: ResultsDisplayProps) => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="celestial-card overflow-hidden">
+        {result.isPremium && result.clientPhoto && (
+          <div className="relative h-32 md:h-40 overflow-hidden bg-cosmic-900">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cosmic-900/80"></div>
+            <div 
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-cosmic-400 overflow-hidden z-10"
+            >
+              <img 
+                src={result.clientPhoto} 
+                alt="Perfil" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+        )}
+        
         <div className="p-8 text-center border-b border-celestial-700/20">
-          <h2 className="text-3xl font-bold text-white mb-3">Seu Mapa Astral</h2>
+          <h2 className="text-3xl font-bold text-white mb-3">
+            {result.isPremium ? 'Seu Mapa Astral Premium' : 'Seu Mapa Astral'}
+          </h2>
           <p className="text-space-300">Uma análise detalhada baseada no seu perfil astrológico.</p>
+          {result.isPremium && (
+            <div className="inline-block mt-3 px-3 py-1 bg-cosmic-600/20 text-cosmic-400 text-sm rounded-full">
+              Versão Premium Ativada
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3">
@@ -75,6 +95,18 @@ const ResultsDisplay = ({ result, shareUrl }: ResultsDisplayProps) => {
               >
                 Compatibilidade
               </button>
+              {result.isPremium && (
+                <button
+                  className={`px-4 py-2 text-sm font-medium ${
+                    activeTab === 'future' 
+                      ? 'text-cosmic-400 border-b-2 border-cosmic-400' 
+                      : 'text-space-400 hover:text-white'
+                  }`}
+                  onClick={() => setActiveTab('future')}
+                >
+                  Futuro
+                </button>
+              )}
             </div>
             
             <div className="space-y-6">
@@ -136,6 +168,39 @@ const ResultsDisplay = ({ result, shareUrl }: ResultsDisplayProps) => {
                   </div>
                 </div>
               )}
+              
+              {activeTab === 'future' && result.isPremium && result.futureAnalysis && (
+                <div className="animate-fade-in">
+                  <div className="celestial-card p-5 border-cosmic-500/30">
+                    <h4 className="text-xl font-medium text-cosmic-400 mb-4">Análise do Seu Futuro</h4>
+                    <p className="text-space-300 leading-relaxed">{result.futureAnalysis}</p>
+                    
+                    <div className="mt-6 pt-6 border-t border-celestial-700/20">
+                      <h5 className="text-lg font-medium text-white mb-3">Recomendações Personalizadas</h5>
+                      <ul className="space-y-3">
+                        <li className="flex items-start">
+                          <span className="text-cosmic-400 mr-2">✦</span>
+                          <span className="text-space-300">
+                            Aproveite o período de crescimento profissional para buscar novas oportunidades.
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-cosmic-400 mr-2">✦</span>
+                          <span className="text-space-300">
+                            Invista em sua comunicação para fortalecer seus relacionamentos.
+                          </span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="text-cosmic-400 mr-2">✦</span>
+                          <span className="text-space-300">
+                            Cuide da sua saúde mental com práticas de meditação e autocuidado.
+                          </span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           
@@ -162,15 +227,20 @@ const ResultsDisplay = ({ result, shareUrl }: ResultsDisplayProps) => {
               Salvar PDF
             </button>
             
-            <div className="mt-8 p-4 bg-cosmic-700/10 rounded-lg">
-              <h4 className="text-sm font-medium text-cosmic-300 mb-2">Versão Premium</h4>
-              <p className="text-space-400 text-sm mb-4">
-                Desbloqueie uma análise completa do seu mapa astral com interpretações detalhadas.
-              </p>
-              <button className="w-full px-4 py-2 bg-gradient-to-r from-cosmic-600 to-cosmic-500 text-white rounded-full text-sm transition-all duration-300 hover:opacity-90">
-                Saiba Mais
-              </button>
-            </div>
+            {!result.isPremium && (
+              <div className="mt-8 p-4 bg-cosmic-700/10 rounded-lg">
+                <h4 className="text-sm font-medium text-cosmic-300 mb-2">Versão Premium</h4>
+                <p className="text-space-400 text-sm mb-4">
+                  Desbloqueie uma análise completa do seu mapa astral com interpretações detalhadas.
+                </p>
+                <button 
+                  className="w-full px-4 py-2 bg-gradient-to-r from-cosmic-600 to-cosmic-500 text-white rounded-full text-sm transition-all duration-300 hover:opacity-90"
+                  onClick={onPremiumClick}
+                >
+                  Saiba Mais
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

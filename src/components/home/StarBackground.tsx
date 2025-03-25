@@ -74,7 +74,7 @@ const StarBackground = () => {
   return (
     <div className="stars-container fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
       {/* Estrelas são criadas dinamicamente via JavaScript */}
-      <style jsx="true">{`
+      <style>{`
         @keyframes shooting {
           0% {
             transform: translateX(0) translateY(0) rotate(var(--angle));

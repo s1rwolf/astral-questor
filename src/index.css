@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -193,7 +194,7 @@
   animation: constellationGlow 4s ease-in-out infinite;
 }
 
-// Adicionar animações novas para a roda do zodíaco
+/* Adicionar animações novas para a roda do zodíaco */
 @keyframes pulse-glow {
   0%, 100% {
     box-shadow: 0 0 5px 2px rgba(124, 58, 237, 0.3);

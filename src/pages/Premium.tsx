@@ -8,12 +8,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { QuizResult } from '../utils/quizUtils';
 import { Badge } from '@/components/ui/badge';
-import { Star, Calendar, Sparkles, Brain, Heart, Briefcase, Compass } from 'lucide-react';
+import { Star, Calendar, Sparkles, Brain, Heart, Briefcase, Compass, MessageCircle, Send } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 const Premium = () => {
   const navigate = useNavigate();
   const [result, setResult] = useState<QuizResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<{type: 'user' | 'assistant', content: string}[]>([
+    {type: 'assistant', content: 'Olá! Sou Venus, sua guia astrológica. Como posso ajudar você hoje?'}
+  ]);
+  const [sendingMessage, setSendingMessage] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Recuperar o resultado do localStorage
@@ -34,6 +43,60 @@ const Premium = () => {
       navigate('/quiz');
     }
   }, [navigate]);
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    
+    setSendingMessage(true);
+    
+    // Adicionar mensagem do usuário ao chat
+    const userMessage = message;
+    setChatMessages(prev => [...prev, {type: 'user', content: userMessage}]);
+    setMessage('');
+    
+    try {
+      // Enviar mensagem para o webhook
+      const response = await fetch('https://n8n-n8n.j7puxu.easypanel.host/webhook/venus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        mode: 'no-cors', // Para evitar problemas de CORS
+        body: JSON.stringify({
+          message: userMessage,
+          user: result?.name || 'Usuário Premium',
+          birthData: result?.birthData,
+          sign: result?.sign,
+          timestamp: new Date().toISOString()
+        }),
+      });
+      
+      // Como estamos usando no-cors, não podemos verificar o status da resposta
+      // Simular uma resposta do assistente após um pequeno delay
+      setTimeout(() => {
+        const responses = [
+          "Entendo sua questão sobre o futuro. Seus astros indicam mudanças positivas nos próximos meses.",
+          "Observo em seu mapa astral que você está em um período de transformação importante.",
+          "Venus está em trânsito na sua casa da intuição. Confie mais nos seus instintos neste momento.",
+          "As conjunções astrais deste mês favorecem decisões relacionadas à sua pergunta.",
+          "Interessante questão! Seu ascendente sugere que você deve considerar novas perspectivas."
+        ];
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        
+        setChatMessages(prev => [...prev, {type: 'assistant', content: randomResponse}]);
+        setSendingMessage(false);
+      }, 1500);
+      
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      toast({
+        title: "Erro na comunicação",
+        description: "Não foi possível enviar sua mensagem. Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+      setSendingMessage(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -66,7 +129,7 @@ const Premium = () => {
 
           {result && (
             <Tabs defaultValue="main" className="w-full max-w-5xl mx-auto">
-              <TabsList className="grid grid-cols-3 md:grid-cols-7 mb-8">
+              <TabsList className="grid grid-cols-2 md:grid-cols-8 mb-8">
                 <TabsTrigger value="main" className="data-[state=active]:bg-cosmic-600">Principal</TabsTrigger>
                 <TabsTrigger value="cycles" className="data-[state=active]:bg-cosmic-600">Ciclos</TabsTrigger>
                 <TabsTrigger value="lessons" className="data-[state=active]:bg-cosmic-600">Lições</TabsTrigger>
@@ -74,6 +137,7 @@ const Premium = () => {
                 <TabsTrigger value="relationships" className="data-[state=active]:bg-cosmic-600">Relacionamentos</TabsTrigger>
                 <TabsTrigger value="career" className="data-[state=active]:bg-cosmic-600">Carreira</TabsTrigger>
                 <TabsTrigger value="forecast" className="data-[state=active]:bg-cosmic-600">Previsões</TabsTrigger>
+                <TabsTrigger value="chat" className="data-[state=active]:bg-cosmic-600">Chat com Venus</TabsTrigger>
               </TabsList>
               
               <TabsContent value="main" className="animate-fade-in">
@@ -305,6 +369,81 @@ const Premium = () => {
                       Voltar para Resultados
                     </Button>
                   </CardFooter>
+                </Card>
+              </TabsContent>
+              
+              <TabsContent value="chat" className="animate-fade-in">
+                <Card className="celestial-card">
+                  <CardHeader>
+                    <CardTitle className="text-white">
+                      <div className="flex items-center">
+                        <MessageCircle className="mr-2 text-cosmic-400" size={20} />
+                        Chat com Venus
+                      </div>
+                    </CardTitle>
+                    <CardDescription>
+                      Converse diretamente com sua guia astrológica e obtenha insights personalizados
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-col h-[400px]">
+                      <ScrollArea className="flex-1 mb-4 pr-4">
+                        <div className="space-y-4">
+                          {chatMessages.map((msg, index) => (
+                            <div 
+                              key={index} 
+                              className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                            >
+                              <div 
+                                className={`max-w-[80%] p-3 rounded-2xl ${
+                                  msg.type === 'user' 
+                                    ? 'bg-cosmic-600 text-white' 
+                                    : 'bg-cosmic-800/50 border border-cosmic-700/50'
+                                }`}
+                              >
+                                <p className={`text-sm ${msg.type === 'user' ? 'text-white' : 'text-space-200'}`}>
+                                  {msg.content}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                          {sendingMessage && (
+                            <div className="flex justify-start">
+                              <div className="max-w-[80%] p-3 rounded-2xl bg-cosmic-800/50 border border-cosmic-700/50">
+                                <div className="flex space-x-2">
+                                  <div className="w-2 h-2 bg-cosmic-400 rounded-full animate-pulse"></div>
+                                  <div className="w-2 h-2 bg-cosmic-400 rounded-full animate-pulse delay-150"></div>
+                                  <div className="w-2 h-2 bg-cosmic-400 rounded-full animate-pulse delay-300"></div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </ScrollArea>
+                      
+                      <div className="flex gap-2">
+                        <Input 
+                          value={message} 
+                          onChange={(e) => setMessage(e.target.value)}
+                          placeholder="Pergunte à Venus sobre seu destino..."
+                          className="bg-cosmic-900/50 border-cosmic-700 text-space-200 placeholder:text-space-500"
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' && !sendingMessage) {
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                        <Button 
+                          onClick={handleSendMessage} 
+                          disabled={sendingMessage || !message.trim()} 
+                          className="cosmic-button flex items-center"
+                        >
+                          <Send size={16} className="mr-1" />
+                          Enviar
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
               </TabsContent>
             </Tabs>

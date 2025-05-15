@@ -44,6 +44,14 @@ const Premium = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    // Rolar para o final do chat quando novas mensagens são adicionadas
+    const chatContainer = document.querySelector('.chat-container');
+    if (chatContainer) {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }, [chatMessages]);
+
   const handleSendMessage = async () => {
     if (!message.trim()) return;
     
@@ -61,7 +69,6 @@ const Premium = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        mode: 'no-cors', // Para evitar problemas de CORS
         body: JSON.stringify({
           message: userMessage,
           user: result?.name || 'Usuário Premium',
@@ -71,9 +78,15 @@ const Premium = () => {
         }),
       });
       
-      // Como estamos usando no-cors, não podemos verificar o status da resposta
-      // Simular uma resposta do assistente após um pequeno delay
-      setTimeout(() => {
+      // Tentativa de obter uma resposta do webhook
+      let responseText;
+      try {
+        // Se a resposta for um JSON válido, tente extrair a mensagem
+        const responseData = await response.json();
+        responseText = responseData.message || responseData.response || responseData.reply;
+      } catch (error) {
+        // Se não conseguir obter uma resposta JSON válida, use respostas pré-definidas
+        console.log('Usando resposta simulada devido a:', error);
         const responses = [
           "Entendo sua questão sobre o futuro. Seus astros indicam mudanças positivas nos próximos meses.",
           "Observo em seu mapa astral que você está em um período de transformação importante.",
@@ -81,11 +94,14 @@ const Premium = () => {
           "As conjunções astrais deste mês favorecem decisões relacionadas à sua pergunta.",
           "Interessante questão! Seu ascendente sugere que você deve considerar novas perspectivas."
         ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        
-        setChatMessages(prev => [...prev, {type: 'assistant', content: randomResponse}]);
+        responseText = responses[Math.floor(Math.random() * responses.length)];
+      }
+      
+      // Adicionar resposta ao chat
+      setTimeout(() => {
+        setChatMessages(prev => [...prev, {type: 'assistant', content: responseText}]);
         setSendingMessage(false);
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
@@ -387,7 +403,7 @@ const Premium = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-col h-[400px]">
-                      <ScrollArea className="flex-1 mb-4 pr-4">
+                      <ScrollArea className="flex-1 mb-4 pr-4 chat-container">
                         <div className="space-y-4">
                           {chatMessages.map((msg, index) => (
                             <div 

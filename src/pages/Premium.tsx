@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Star, Calendar, Sparkles, Brain, Heart, Briefcase, Compass, MessageCircle, Send } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 const Premium = () => {
   const navigate = useNavigate();
@@ -79,13 +79,27 @@ const Premium = () => {
       });
       
       // Tentativa de obter uma resposta do webhook
-      let responseText;
+      let responseText = '';
       try {
-        // Se a resposta for um JSON válido, tente extrair a mensagem
         const responseData = await response.json();
-        responseText = responseData.message || responseData.response || responseData.reply;
+        
+        // Verificar diferentes formatos possíveis da resposta
+        if (Array.isArray(responseData) && responseData.length > 0) {
+          // Formato [{"output": "mensagem"}]
+          responseText = responseData[0]?.output || '';
+        } else if (typeof responseData === 'object') {
+          // Formato {"message": "mensagem"} ou similar
+          responseText = responseData.message || responseData.response || responseData.reply || responseData.output || '';
+        } else if (typeof responseData === 'string') {
+          // Resposta direta como string
+          responseText = responseData;
+        }
+        
+        // Se ainda não temos uma resposta válida, usar fallback
+        if (!responseText) {
+          throw new Error('Formato de resposta não reconhecido');
+        }
       } catch (error) {
-        // Se não conseguir obter uma resposta JSON válida, use respostas pré-definidas
         console.log('Usando resposta simulada devido a:', error);
         const responses = [
           "Entendo sua questão sobre o futuro. Seus astros indicam mudanças positivas nos próximos meses.",

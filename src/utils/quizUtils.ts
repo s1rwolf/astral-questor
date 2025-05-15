@@ -6,6 +6,10 @@ export interface QuizResult {
   compatibility: string[];
   strengths: string[];
   challenges: string[];
+  // Add these missing properties
+  name?: string;
+  birthData?: BirthData;
+  sign?: string;
   // Premium features
   isPremium?: boolean;
   futureAnalysis?: string;
@@ -100,6 +104,7 @@ export const generateQuizResult = (answers: QuizAnswers, birthData: BirthData): 
   // Aqui seria implementada lógica real baseada nas respostas e dados de nascimento
   // Para demonstração, vamos criar um resultado simulado baseado no signo
   
+  // Add the birthData and sign to the result
   const zodiacSign = birthData.zodiacSign || getZodiacSignFromBirthDate(birthData.day, birthData.month);
   
   // Resultados personalizados por signo (simplificado)
@@ -159,7 +164,9 @@ export const generateQuizResult = (answers: QuizAnswers, birthData: BirthData): 
     details: baseResult.details || results["default"].details!,
     compatibility: baseResult.compatibility || results["default"].compatibility!,
     strengths: baseResult.strengths || results["default"].strengths!,
-    challenges: baseResult.challenges || results["default"].challenges!
+    challenges: baseResult.challenges || results["default"].challenges!,
+    birthData: birthData,
+    sign: zodiacSign
   };
 };
 

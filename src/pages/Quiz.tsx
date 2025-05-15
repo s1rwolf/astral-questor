@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
@@ -34,18 +33,32 @@ const Quiz = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBirthDataSubmit = (birthData: BirthData) => {
-    // Incluir o signo selecionado nos dados
-    const birthDataWithSign = {
-      ...birthData,
+  const handleBirthDataSubmit = (data: { birthDate: string; birthTime: string; birthPlace: string; }) => {
+    // Parse birthDate into day, month, year
+    const [year, month, day] = data.birthDate.split('-').map(Number);
+    
+    // Parse birthTime into hour and minute
+    const [hour, minute] = data.birthTime.split(':').map(Number);
+    
+    // Create BirthData object
+    const birthData: BirthData = {
+      day,
+      month,
+      year,
+      hour,
+      minute,
+      city: data.birthPlace,
       zodiacSign: selectedSign
     };
     
     // Generate result based on quiz answers and birth data
-    const result = generateQuizResult(quizAnswers, birthDataWithSign);
+    const result = generateQuizResult(quizAnswers, birthData);
+    
+    // Set the user's name from the birthPlace for simplicity
+    result.name = data.birthPlace.split(',')[0]; // Use the city name as a placeholder for the user's name
     
     // Generate shareable URL
-    const shareUrl = generateShareableUrl(birthDataWithSign);
+    const shareUrl = generateShareableUrl(birthData);
     
     // Store data in localStorage (in a real app, this would go to a database)
     localStorage.setItem('astralQuizResult', JSON.stringify(result));

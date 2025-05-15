@@ -65,8 +65,8 @@ const Premium = () => {
         body: JSON.stringify({
           message: userMessage,
           user: result?.name || 'Usuário Premium',
-          birthData: result?.birthData,
-          sign: result?.sign,
+          birthData: result?.birthData || {},
+          sign: result?.sign || result?.birthData?.zodiacSign || 'Desconhecido',
           timestamp: new Date().toISOString()
         }),
       });
